@@ -67,7 +67,7 @@ class Admin {
         }
 
         // Chart.js (bundled locally).
-        wp_enqueue_script('mfdc-chartjs', MFDC_PLUGIN_URL . 'assets/vendor/chartjs/chart.umd.min.js', [], '4.4.0', true);
+        wp_enqueue_script('mfdc-chartjs', MFDC_PLUGIN_URL . 'assets/vendor/chartjs/chart.umd.min.js', [], '4.4.8', true);
 
         // Leaflet on entries page only (bundled locally).
         if (strpos($hook, 'mfdc-entries') !== false) {

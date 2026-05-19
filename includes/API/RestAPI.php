@@ -119,13 +119,15 @@ class RestAPI {
     }
 
     /**
-     * Read permission: API key, or logged-in user with read capability.
+     * Read permission: API key, or logged-in user with edit_posts capability.
+     * Project and entry data contain form definitions and collected data,
+     * which are not public — require at least contributor-level access.
      */
     public function check_read_permission($request) {
         if ($this->has_valid_api_key($request)) {
             return true;
         }
-        if (is_user_logged_in() && current_user_can('read')) {
+        if (is_user_logged_in() && current_user_can('edit_posts')) {
             return true;
         }
         return $this->permission_error();

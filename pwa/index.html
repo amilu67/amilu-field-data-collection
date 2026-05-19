@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Amilu Field Data Collection — {{SITE_NAME}}</title>
 
-    <link rel="manifest" href="{{PLUGIN_URL}}pwa/manifest.json">
+    <link rel="manifest" href="{{HOME_URL}}mfdc-app/manifest.json">
     <link rel="icon" type="image/svg+xml" href="{{PLUGIN_URL}}pwa/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="{{PLUGIN_URL}}pwa/icons/icon-192.svg">
 
@@ -67,7 +67,7 @@
 <!-- Service Worker -->
 <script>
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('{{PLUGIN_URL}}pwa/sw.js')
+    navigator.serviceWorker.register('{{HOME_URL}}mfdc-app/sw.js', { scope: '{{HOME_URL}}' })
         .then(reg => console.log('SW registered', reg.scope))
         .catch(err => console.warn('SW registration failed', err));
 }

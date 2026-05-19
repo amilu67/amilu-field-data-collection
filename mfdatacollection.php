@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Amilu Field Data Collection
- * Plugin URI: https://github.com/amilu67/wp-mfdatacollection
+ * Plugin URI: https://github.com/amilu67/amilu-field-data-collection
  * Description: Sistema di raccolta dati mobile con sincronizzazione cloud, form builder drag & drop e app PWA offline-first.
  * Version: 2.1.0
  * Requires at least: 6.0
@@ -11,14 +11,14 @@
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: amilu-field-data-collection
- * GitHub Plugin URI: https://github.com/amilu67/wp-mfdatacollection
+ * GitHub Plugin URI: https://github.com/amilu67/amilu-field-data-collection
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MFDC_VERSION', '2.1.0');
+define('MFDC_VERSION', '2.1.1');
 define('MFDC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MFDC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MFDC_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -89,6 +89,8 @@ class Mf_Data_Collection { // phpcs:ignore WordPress.NamingConventions.PrefixAll
 
     public function register_pwa_route() {
         add_rewrite_rule('^mfdc-app/?$', 'index.php?mfdc_pwa=1', 'top');
+        add_rewrite_rule('^mfdc-app/sw\.js$', 'index.php?mfdc_pwa=sw', 'top');
+        add_rewrite_rule('^mfdc-app/manifest\.json$', 'index.php?mfdc_pwa=manifest', 'top');
         add_rewrite_tag('%mfdc_pwa%', '([^&]+)');
 
         // Auto-flush rewrite rules once per plugin version change
@@ -112,19 +114,74 @@ class Mf_Data_Collection { // phpcs:ignore WordPress.NamingConventions.PrefixAll
             : '';
         $home_path = wp_parse_url( home_url('/'), PHP_URL_PATH );
         $relative   = '/' . ltrim(substr($request_path, strlen(rtrim($home_path, '/'))), '/');
-        if (preg_match('#^/mfdc-app/?$#', $relative)) {
-            $is_pwa = true;
+        // Detect which PWA resource is requested.
+        $pwa_type = '';
+        if (preg_match('#^/mfdc-app/sw\.js$#', $relative)) {
+            $pwa_type = 'sw';
+        } elseif (preg_match('#^/mfdc-app/manifest\.json$#', $relative)) {
+            $pwa_type = 'manifest';
+        } elseif (preg_match('#^/mfdc-app/?$#', $relative)) {
+            $pwa_type = '1';
         }
 
-        // Fallback: query var (works after rewrite rules are flushed)
-        if (!$is_pwa && get_query_var('mfdc_pwa') === '1') {
-            $is_pwa = true;
+        // Fallback: query var.
+        if (empty($pwa_type)) {
+            $pwa_type = get_query_var('mfdc_pwa');
         }
 
-        if (!$is_pwa) {
+        if (empty($pwa_type)) {
             return;
         }
 
+        // Serve the Service Worker with correct scope header.
+        if ($pwa_type === 'sw') {
+            $sw_file = MFDC_PLUGIN_DIR . 'pwa/sw.js';
+            if (file_exists($sw_file)) {
+                status_header(200);
+                header('Content-Type: application/javascript; charset=utf-8');
+                header('Service-Worker-Allowed: /');
+                readfile($sw_file);
+                exit;
+            }
+        }
+
+        // Serve the manifest with absolute URLs (handles WP in subdirectory).
+        if ($pwa_type === 'manifest') {
+            $plugin_url = esc_url(MFDC_PLUGIN_URL);
+            $pwa_url    = esc_url(home_url('/mfdc-app/'));
+            $scope_url  = esc_url(home_url('/'));
+            $manifest = [
+                'name'             => 'Amilu Field Data Collection',
+                'short_name'       => 'Amilu Data',
+                'description'      => 'Offline-first mobile data collection app',
+                'start_url'        => $pwa_url,
+                'scope'            => $scope_url,
+                'display'          => 'standalone',
+                'orientation'      => 'portrait',
+                'background_color' => '#667eea',
+                'theme_color'      => '#667eea',
+                'icons'            => [
+                    [
+                        'src'     => $plugin_url . 'pwa/icons/icon-192.svg',
+                        'sizes'   => 'any',
+                        'type'    => 'image/svg+xml',
+                        'purpose' => 'any',
+                    ],
+                    [
+                        'src'     => $plugin_url . 'pwa/icons/icon-512.svg',
+                        'sizes'   => 'any',
+                        'type'    => 'image/svg+xml',
+                        'purpose' => 'any',
+                    ],
+                ],
+            ];
+            status_header(200);
+            header('Content-Type: application/json; charset=utf-8');
+            echo wp_json_encode($manifest);
+            exit;
+        }
+
+        // Serve the PWA HTML shell.
         $pwa_index = MFDC_PLUGIN_DIR . 'pwa/index.html';
         if (file_exists($pwa_index)) {
             status_header(200);
@@ -132,6 +189,7 @@ class Mf_Data_Collection { // phpcs:ignore WordPress.NamingConventions.PrefixAll
             $html = file_get_contents($pwa_index);
             $html = str_replace('{{REST_URL}}', esc_url(rest_url('mfdc/v1')), $html);
             $html = str_replace('{{PLUGIN_URL}}', esc_url(MFDC_PLUGIN_URL), $html);
+            $html = str_replace('{{HOME_URL}}', esc_url(home_url('/')), $html);
             $html = str_replace('{{SITE_NAME}}', esc_html(get_bloginfo('name')), $html);
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $html is a static template with esc_url/esc_html replacements
             echo $html;

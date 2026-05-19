@@ -1,8 +1,9 @@
 {
     "name": "Amilu Field Data Collection",
-    "short_name": "Amilu Field Data Collection",
+    "short_name": "Amilu Data",
     "description": "Offline-first mobile data collection app",
-    "start_url": "./",
+    "start_url": "/mfdc-app/",
+    "scope": "/",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#667eea",
@@ -10,15 +11,15 @@
     "icons": [
         {
             "src": "icons/icon-192.svg",
-            "sizes": "192x192",
+            "sizes": "any",
             "type": "image/svg+xml",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "icons/icon-512.svg",
-            "sizes": "512x512",
+            "sizes": "any",
             "type": "image/svg+xml",
-            "purpose": "any maskable"
+            "purpose": "any"
         }
     ]
 }

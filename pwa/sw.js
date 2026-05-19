@@ -2,7 +2,11 @@
  * Amilu Field Data Collection WP — Service Worker
  * Cache-first for app shell, network-first for API calls.
  */
-const CACHE_NAME = 'mfdc-v2';
+const CACHE_NAME = 'mfdc-v4';
+
+// Only precache PWA shell assets served from within the pwa/ directory.
+// Vendor assets (Font Awesome, html5-qrcode) are loaded on-demand and
+// cached dynamically by the fetch handler below.
 const SHELL_ASSETS = [
     './',
     './css/app.css',
@@ -10,12 +14,8 @@ const SHELL_ASSETS = [
     './js/db.js',
     './js/sync.js',
     './js/form-renderer.js',
-    './manifest.json',
     './icons/icon-192.svg',
     './icons/icon-512.svg',
-    '../assets/vendor/fontawesome/all.min.css',
-    '../assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
-    '../assets/vendor/html5-qrcode/html5-qrcode.min.js',
 ];
 
 self.addEventListener('install', e => {

@@ -7,7 +7,7 @@ Ispirato a [Epicollect5](https://five.epicollect.net/), Amilu Field Data Collect
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue?logo=wordpress)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php)
 ![License](https://img.shields.io/badge/License-GPL%20v2-green)
-![Version](https://img.shields.io/badge/Version-2.1.0-667eea)
+![Version](https://img.shields.io/badge/Version-2.1.1-667eea)
 
 ---
 
@@ -45,7 +45,7 @@ Ispirato a [Epicollect5](https://five.epicollect.net/), Amilu Field Data Collect
 - Timing-safe API key comparison (`hash_equals`)
 - SQL injection prevention (whitelist ORDER BY, `$wpdb->prepare`)
 - Validazione UUID e datetime su input
-- File upload: whitelist MIME + estensioni, `wp_check_filetype`, limite 50 MB
+- File upload via `wp_handle_upload`: whitelist MIME + estensioni, `wp_check_filetype`, limite 50 MB
 - Nonce verification su tutte le azioni admin e AJAX
 - `uninstall.php` per pulizia completa alla rimozione
 
@@ -66,9 +66,9 @@ Ispirato a [Epicollect5](https://five.epicollect.net/), Amilu Field Data Collect
 
 1. Scarica lo zip del repository o clona:
    ```bash
-   git clone https://github.com/amilu67/amilu-field-data-collection.git mfdatacollection
+   git clone https://github.com/amilu67/amilu-field-data-collection.git amilu-field-data-collection
    ```
-2. Copia la cartella `mfdatacollection` in `wp-content/plugins/`
+2. Copia la cartella `amilu-field-data-collection` in `wp-content/plugins/`
 3. Attiva il plugin da **Plugin → Plugin installati** in WordPress
 4. Vai su **Amilu Field Data Collection → Settings** e genera una API key
 
@@ -91,7 +91,7 @@ Ispirato a [Epicollect5](https://five.epicollect.net/), Amilu Field Data Collect
 ### 2. Configura l'app mobile
 - Vai su **Amilu Field Data Collection → Settings**
 - Genera una API key
-- Apri l'URL della PWA: `https://tuosito.it/mfdc-app/`
+- Apri l'URL della PWA: `https://tuosito.it/amilfida-app/`
 - Nell'app, vai in **Settings** e inserisci API URL e API Key
 - Installa l'app sul dispositivo (banner "Aggiungi alla Home")
 
@@ -111,8 +111,8 @@ Ispirato a [Epicollect5](https://five.epicollect.net/), Amilu Field Data Collect
 ## Struttura del progetto
 
 ```
-mfdatacollection/
-├── mfdatacollection.php      # File principale del plugin
+amilu-field-data-collection/
+├── amilu-field-data-collection.php      # File principale del plugin
 ├── uninstall.php              # Pulizia dati alla disinstallazione
 ├── includes/
 │   ├── Installer.php          # Creazione tabelle DB e directory
@@ -151,7 +151,7 @@ mfdatacollection/
 
 ## REST API
 
-Base URL: `https://tuosito.it/wp-json/mfdc/v1`
+Base URL: `https://tuosito.it/wp-json/amilfida/v1`
 
 | Metodo | Endpoint | Descrizione |
 |--------|----------|-------------|
@@ -167,16 +167,28 @@ Base URL: `https://tuosito.it/wp-json/mfdc/v1`
 
 ---
 
-## Librerie esterne (via CDN)
+## Librerie incluse (bundled localmente)
 
-- [Font Awesome 6 Free](https://fontawesome.com/) — icone
-- [Chart.js 4](https://www.chartjs.org/) — grafici dashboard
-- [Leaflet 1.9](https://leafletjs.com/) — mappa entries
-- [html5-qrcode](https://github.com/mebjas/html5-qrcode) — scanner barcode/QR nella PWA
+- [Font Awesome 6.5.1](https://fontawesome.com/) — icone
+- [Chart.js 4.5.1](https://www.chartjs.org/) — grafici dashboard
+- [Leaflet 1.9.4](https://leafletjs.com/) — mappa entries
+- [html5-qrcode 2.3.8](https://github.com/mebjas/html5-qrcode) — scanner barcode/QR nella PWA
+
+Tutte le librerie sono incluse in `assets/vendor/` — nessuna dipendenza CDN esterna.
 
 ---
 
 ## Changelog
+
+### 2.1.1
+- Prefisso unico `amilfida` su tutte le funzioni, classi, define, opzioni, tabelle DB e CSS
+- Chart.js aggiornato a 4.5.1
+- Tutte le librerie di terze parti bundlate localmente (zero CDN)
+- `<script>` inline sostituiti con `wp_add_inline_script`
+- `move_uploaded_file` sostituito con `wp_handle_upload`
+- Permission callback REST API granulari con `current_user_can` per endpoint
+- PWA: manifest e service worker serviti via WordPress con header scope corretti
+- Fix percorsi webfont Font Awesome per caricamento locale
 
 ### 2.1.0
 - Aggiunta flow logic (jump rules) stile Epicollect per campi select/radio

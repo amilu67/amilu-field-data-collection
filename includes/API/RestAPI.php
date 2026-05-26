@@ -1,14 +1,14 @@
 <?php
-namespace MFDataCollection\API;
+namespace Amilfida\API;
 
-use MFDataCollection\Database\EntryManager;
+use Amilfida\Database\EntryManager;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
 class RestAPI {
-    private $namespace = 'mfdc/v1';
+    private $namespace = 'amilfida/v1';
     private $entry_manager;
 
     /** Allowed MIME types for media uploads. */
@@ -112,7 +112,7 @@ class RestAPI {
     private function has_valid_api_key($request) {
         $api_key = $request->get_header('X-API-Key');
         if ($api_key) {
-            $stored_key = get_option('mfdc_api_key');
+            $stored_key = get_option('amilfida_api_key');
             return $stored_key && hash_equals($stored_key, $api_key);
         }
         return false;
@@ -146,7 +146,7 @@ class RestAPI {
         // Allow anonymous submissions if the project permits it.
         $project_id = $request->get_param('project_id');
         if ($project_id) {
-            $allow_anonymous = get_post_meta(absint($project_id), '_mfdc_allow_anonymous', true);
+            $allow_anonymous = get_post_meta(absint($project_id), '_amilfida_allow_anonymous', true);
             if ($allow_anonymous === '1') {
                 return true;
             }
@@ -180,12 +180,12 @@ class RestAPI {
 
     public function get_projects($request) {
         $args = [
-            'post_type'      => 'mfdc_project',
+            'post_type'      => 'amilfida_project',
             'posts_per_page' => 100,
             'post_status'    => 'publish',
             'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- single meta key on small dataset
                 [
-                    'key'     => '_mfdc_status',
+                    'key'     => '_amilfida_status',
                     'value'   => 'active',
                     'compare' => '=',
                 ],
@@ -206,7 +206,7 @@ class RestAPI {
         $id   = absint($request->get_param('id'));
         $post = get_post($id);
 
-        if (!$post || $post->post_type !== 'mfdc_project') {
+        if (!$post || $post->post_type !== 'amilfida_project') {
             return new \WP_Error('not_found', __('Project not found', 'amilu-field-data-collection'), ['status' => 404]);
         }
 
@@ -222,7 +222,7 @@ class RestAPI {
 
         // Verify the project exists
         $project = get_post(absint($params['project_id']));
-        if (!$project || $project->post_type !== 'mfdc_project') {
+        if (!$project || $project->post_type !== 'amilfida_project') {
             return new \WP_Error('invalid_project', __('Project not found', 'amilu-field-data-collection'), ['status' => 404]);
         }
 
@@ -295,7 +295,7 @@ class RestAPI {
 
         // Use wp_handle_upload for proper WordPress file handling.
         // Populate $_FILES so wp_handle_upload can process it.
-        $_FILES['mfdc_upload'] = $file;
+        $_FILES['amilfida_upload'] = $file;
 
         $upload_overrides = [
             'test_form' => false,
@@ -375,10 +375,10 @@ class RestAPI {
     private function format_project($post) {
         return [
             'id'             => $post->ID,
-            'uuid'           => get_post_meta($post->ID, '_mfdc_uuid', true),
+            'uuid'           => get_post_meta($post->ID, '_amilfida_uuid', true),
             'name'           => $post->post_title,
             'description'    => $post->post_content,
-            'form_structure' => json_decode(get_post_meta($post->ID, '_mfdc_form_structure', true), true),
+            'form_structure' => json_decode(get_post_meta($post->ID, '_amilfida_form_structure', true), true),
             'created_at'     => $post->post_date,
             'updated_at'     => $post->post_modified,
         ];

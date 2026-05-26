@@ -2,7 +2,7 @@
 Contributors: amilu67
 Tags: data collection, forms, mobile, pwa, survey
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 2.1.0
 License: GPLv2 or later
@@ -31,7 +31,7 @@ Amilu Field Data Collection is a WordPress plugin for field data collection, ins
 1. Upload the `amilu-field-data-collection` folder to `/wp-content/plugins/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to Amilu Field Data Collection â†’ Settings and generate an API key
-4. Open the PWA at `https://yoursite.com/mfdc-app/` on your mobile device
+4. Open the PWA at `https://yoursite.com/amilfida-app/` on your mobile device
 
 == Frequently Asked Questions ==
 

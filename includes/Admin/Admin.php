@@ -1,7 +1,7 @@
 <?php
-namespace MFDataCollection\Admin;
+namespace Amilfida\Admin;
 
-use MFDataCollection\Database\EntryManager;
+use Amilfida\Database\EntryManager;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -15,7 +15,7 @@ class Admin {
 
         add_action('admin_menu', [$this, 'add_menu_pages']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_scripts']);
-        add_action('wp_ajax_mfdc_delete_entry', [$this, 'ajax_delete_entry']);
+        add_action('wp_ajax_amilfida_delete_entry', [$this, 'ajax_delete_entry']);
     }
     
     public function add_menu_pages() {
@@ -23,68 +23,68 @@ class Admin {
             __('Amilu Field Data Collection', 'amilu-field-data-collection'),
             __('Amilu Field Data Collection', 'amilu-field-data-collection'),
             'manage_options',
-            'mfdc-dashboard',
+            'amilfida-dashboard',
             [$this, 'render_dashboard'],
             'dashicons-clipboard',
             30
         );
         
         add_submenu_page(
-            'mfdc-dashboard',
+            'amilfida-dashboard',
             __('Entries', 'amilu-field-data-collection'),
             __('Entries', 'amilu-field-data-collection'),
             'manage_options',
-            'mfdc-entries',
+            'amilfida-entries',
             [$this, 'render_entries']
         );
         
         add_submenu_page(
-            'mfdc-dashboard',
+            'amilfida-dashboard',
             __('Settings', 'amilu-field-data-collection'),
             __('Settings', 'amilu-field-data-collection'),
             'manage_options',
-            'mfdc-settings',
+            'amilfida-settings',
             [$this, 'render_settings']
         );
     }
     
     public function enqueue_scripts($hook) {
-        $is_mfdc = strpos($hook, 'mfdc') !== false || get_post_type() === 'mfdc_project';
-        if (!$is_mfdc) {
+        $is_amilfida = strpos($hook, 'amilfida') !== false || get_post_type() === 'amilfida_project';
+        if (!$is_amilfida) {
             return;
         }
 
         // Font Awesome 6 Free (bundled locally).
-        wp_enqueue_style('font-awesome', MFDC_PLUGIN_URL . 'assets/vendor/fontawesome/all.min.css', [], '6.5.1');
+        wp_enqueue_style('font-awesome', AMILFIDA_PLUGIN_URL . 'assets/vendor/fontawesome/all.min.css', [], '6.5.1');
 
         // Admin CSS.
-        wp_enqueue_style('mfdc-admin', MFDC_PLUGIN_URL . 'assets/css/admin.css', ['font-awesome'], MFDC_VERSION);
+        wp_enqueue_style('amilfida-admin', AMILFIDA_PLUGIN_URL . 'assets/css/admin.css', ['font-awesome'], AMILFIDA_VERSION);
 
         // Form builder on project edit screen.
-        if (get_post_type() === 'mfdc_project') {
-            wp_enqueue_style('mfdc-form-builder', MFDC_PLUGIN_URL . 'assets/css/form-builder.css', ['font-awesome'], MFDC_VERSION);
-            wp_enqueue_script('mfdc-form-builder', MFDC_PLUGIN_URL . 'assets/js/form-builder.js', [], MFDC_VERSION, true);
+        if (get_post_type() === 'amilfida_project') {
+            wp_enqueue_style('amilfida-form-builder', AMILFIDA_PLUGIN_URL . 'assets/css/form-builder.css', ['font-awesome'], AMILFIDA_VERSION);
+            wp_enqueue_script('amilfida-form-builder', AMILFIDA_PLUGIN_URL . 'assets/js/form-builder.js', [], AMILFIDA_VERSION, true);
         }
 
         // Chart.js (bundled locally).
-        wp_enqueue_script('mfdc-chartjs', MFDC_PLUGIN_URL . 'assets/vendor/chartjs/chart.umd.min.js', [], '4.4.8', true);
+        wp_enqueue_script('amilfida-chartjs', AMILFIDA_PLUGIN_URL . 'assets/vendor/chartjs/chart.umd.min.js', [], '4.5.1', true);
 
         // Leaflet on entries page only (bundled locally).
-        if (strpos($hook, 'mfdc-entries') !== false) {
-            wp_enqueue_style('mfdc-leaflet', MFDC_PLUGIN_URL . 'assets/vendor/leaflet/leaflet.css', [], '1.9.4');
-            wp_enqueue_script('mfdc-leaflet', MFDC_PLUGIN_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
+        if (strpos($hook, 'amilfida-entries') !== false) {
+            wp_enqueue_style('amilfida-leaflet', AMILFIDA_PLUGIN_URL . 'assets/vendor/leaflet/leaflet.css', [], '1.9.4');
+            wp_enqueue_script('amilfida-leaflet', AMILFIDA_PLUGIN_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
         }
 
-        wp_enqueue_script('mfdc-admin', MFDC_PLUGIN_URL . 'assets/js/admin.js', ['jquery', 'mfdc-chartjs'], MFDC_VERSION, true);
+        wp_enqueue_script('amilfida-admin', AMILFIDA_PLUGIN_URL . 'assets/js/admin.js', ['jquery', 'amilfida-chartjs'], AMILFIDA_VERSION, true);
 
-        if (strpos($hook, 'mfdc-dashboard') !== false) {
-            wp_localize_script('mfdc-admin', 'mfdcChartData', $this->get_chart_data());
+        if (strpos($hook, 'amilfida-dashboard') !== false) {
+            wp_localize_script('amilfida-admin', 'amilfidaChartData', $this->get_chart_data());
         }
 
         // Always pass ajax url + nonce to admin JS
-        wp_localize_script('mfdc-admin', 'mfdcAdmin', [
+        wp_localize_script('amilfida-admin', 'amilfidaAdmin', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('mfdc_admin_nonce'),
+            'nonce'   => wp_create_nonce('amilfida_admin_nonce'),
         ]);
     }
     
@@ -92,8 +92,8 @@ class Admin {
         global $wpdb;
         
         // Get statistics
-        $total_projects = wp_count_posts('mfdc_project')->publish;
-        $table_entries = $wpdb->prefix . 'mfdc_entries';
+        $total_projects = wp_count_posts('amilfida_project')->publish;
+        $table_entries = $wpdb->prefix . 'amilfida_entries';
         $total_entries = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_entries} WHERE status = 'active'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $entries_today = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $wpdb->prepare(
@@ -106,7 +106,7 @@ class Admin {
         <div class="wrap">
             <h1><?php esc_html_e('Amilu Field Data Collection Dashboard', 'amilu-field-data-collection'); ?></h1>
             
-            <div class="mfdc-stats">
+            <div class="amilfida-stats">
                 <div class="stat-box">
                     <div class="stat-number"><?php echo esc_html($total_projects); ?></div>
                     <div class="stat-label"><?php esc_html_e('Active Projects', 'amilu-field-data-collection'); ?></div>
@@ -125,14 +125,14 @@ class Admin {
             
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <h2 style="margin:0;"><?php esc_html_e('Recent Projects', 'amilu-field-data-collection'); ?></h2>
-                <a href="<?php echo esc_url(admin_url('post-new.php?post_type=mfdc_project')); ?>" class="button button-primary">
+                <a href="<?php echo esc_url(admin_url('post-new.php?post_type=amilfida_project')); ?>" class="button button-primary">
                     <span class="dashicons dashicons-plus-alt2" style="vertical-align:middle;margin-top:-2px;"></span>
                     <?php esc_html_e('New Project', 'amilu-field-data-collection'); ?>
                 </a>
             </div>
             <?php
             $projects = get_posts([
-                'post_type' => 'mfdc_project',
+                'post_type' => 'amilfida_project',
                 'posts_per_page' => 10,
                 'orderby' => 'modified',
                 'order' => 'DESC'
@@ -159,21 +159,21 @@ class Admin {
                     echo '<td>' . esc_html(get_the_modified_date('', $project)) . '</td>';
                     echo '<td>';
                     echo '<a href="' . esc_url(get_edit_post_link($project->ID)) . '" class="button button-small">' . esc_html__('Edit', 'amilu-field-data-collection') . '</a> ';
-                    echo '<a href="' . esc_url(admin_url('admin.php?page=mfdc-entries&project_id=' . $project->ID)) . '" class="button button-small">' . esc_html__('View Entries', 'amilu-field-data-collection') . '</a>';
+                    echo '<a href="' . esc_url(admin_url('admin.php?page=amilfida-entries&project_id=' . $project->ID)) . '" class="button button-small">' . esc_html__('View Entries', 'amilu-field-data-collection') . '</a>';
                     echo '</td>';
                     echo '</tr>';
                 }
 
                 echo '</tbody></table>';
             } else {
-                echo '<div class="mfdc-empty-state"><span class="dashicons dashicons-clipboard" style="font-size:50px;width:50px;height:50px;color:#d0d7de;"></span>';
+                echo '<div class="amilfida-empty-state"><span class="dashicons dashicons-clipboard" style="font-size:50px;width:50px;height:50px;color:#d0d7de;"></span>';
                 echo '<h3>' . esc_html__('No projects yet', 'amilu-field-data-collection') . '</h3>';
                 echo '<p>' . esc_html__('Create your first data collection project to get started.', 'amilu-field-data-collection') . '</p></div>';
             }
             ?>
             
             <!-- Charts Section -->
-            <div id="mfdc-charts" class="mfdc-charts">
+            <div id="amilfida-charts" class="amilfida-charts">
                 <div class="chart-container">
                     <h3>Entries Over Time</h3>
                     <div style="height: 300px;">
@@ -206,7 +206,7 @@ class Admin {
         $project_id = isset($_GET['project_id']) ? absint($_GET['project_id']) : 0;
 
         $projects = get_posts([
-            'post_type' => 'mfdc_project',
+            'post_type' => 'amilfida_project',
             'posts_per_page' => -1,
             'orderby' => 'title',
             'order' => 'ASC'
@@ -217,7 +217,7 @@ class Admin {
             <h1><?php esc_html_e('Entries', 'amilu-field-data-collection'); ?></h1>
 
             <form method="get">
-                <input type="hidden" name="page" value="mfdc-entries" />
+                <input type="hidden" name="page" value="amilfida-entries" />
                 <select name="project_id" onchange="this.form.submit()">
                     <option value=""><?php esc_html_e('Select a project...', 'amilu-field-data-collection'); ?></option>
                     <?php foreach ($projects as $project): ?>
@@ -231,7 +231,7 @@ class Admin {
             <?php
             if ($project_id) {
                 // Build field_id → label map from project form structure
-                $form_structure = get_post_meta($project_id, '_mfdc_form_structure', true);
+                $form_structure = get_post_meta($project_id, '_amilfida_form_structure', true);
                 $field_labels = [];
                 if ($form_structure) {
                     $fs = json_decode($form_structure, true);
@@ -271,16 +271,16 @@ class Admin {
                     }
 
                     if (!empty($map_markers)) {
-                        echo '<div id="mfdc-entries-map" style="height:380px;border-radius:12px;margin-bottom:20px;border:1px solid #d0d7de;z-index:0;"></div>';
-                        wp_add_inline_script('mfdc-admin', 'var mfdcMapMarkers = ' . wp_json_encode($map_markers) . ';', 'before');
+                        echo '<div id="amilfida-entries-map" style="height:380px;border-radius:12px;margin-bottom:20px;border:1px solid #d0d7de;z-index:0;"></div>';
+                        wp_add_inline_script('amilfida-admin', 'var amilfidaMapMarkers = ' . wp_json_encode($map_markers) . ';', 'before');
                     }
 
                     // Pass field labels to JS for the modal.
-                    wp_add_inline_script('mfdc-admin', 'var mfdcFieldLabels = ' . wp_json_encode($field_labels) . ';', 'before');
+                    wp_add_inline_script('amilfida-admin', 'var amilfidaFieldLabels = ' . wp_json_encode($field_labels) . ';', 'before');
 
-                    echo '<p><a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=mfdc_export&project_id=' . $project_id), 'mfdc_export')) . '" class="button export-button">' . esc_html__('Export to CSV', 'amilu-field-data-collection') . '</a></p>';
+                    echo '<p><a href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=amilfida_export&project_id=' . $project_id), 'amilfida_export')) . '" class="button export-button">' . esc_html__('Export to CSV', 'amilu-field-data-collection') . '</a></p>';
 
-                    echo '<div class="mfdc-entries-table"><table class="wp-list-table widefat fixed striped">';
+                    echo '<div class="amilfida-entries-table"><table class="wp-list-table widefat fixed striped">';
                     echo '<thead><tr>';
                     echo '<th>' . esc_html__('Title', 'amilu-field-data-collection') . '</th>';
                     echo '<th>' . esc_html__('Created', 'amilu-field-data-collection') . '</th>';
@@ -336,7 +336,7 @@ class Admin {
                         echo '<td>' . esc_html($entry['created_at']) . '</td>';
                         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $location_str built with esc_attr/esc_html above
                         echo '<td>' . $location_str . '</td>';
-                        $delete_btn = '<button class="button button-small mfdc-delete-entry" data-id="' . esc_attr($entry['id']) . '" style="color:#b32d2e;border-color:#b32d2e;margin-left:4px;">' . esc_html__('Delete', 'amilu-field-data-collection') . '</button>';
+                        $delete_btn = '<button class="button button-small amilfida-delete-entry" data-id="' . esc_attr($entry['id']) . '" style="color:#b32d2e;border-color:#b32d2e;margin-left:4px;">' . esc_html__('Delete', 'amilu-field-data-collection') . '</button>';
                         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $entry_json is esc_attr'd, $delete_btn built with esc_attr/esc_html
                         echo '<td><button class="button button-small view-entry" data-entry=\'' . $entry_json . '\'>' . esc_html__('View', 'amilu-field-data-collection') . '</button> ' . $delete_btn . '</td>';
                         echo '</tr>';
@@ -353,13 +353,13 @@ class Admin {
         </div>
 
         <!-- Entry Detail Modal -->
-        <div id="mfdc-entry-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;">
+        <div id="amilfida-entry-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;">
             <div style="background:#fff;border-radius:12px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #e5e7eb;">
-                    <h3 style="margin:0;font-size:16px;" id="mfdc-modal-title">Entry Detail</h3>
-                    <button id="mfdc-modal-close" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">&times;</button>
+                    <h3 style="margin:0;font-size:16px;" id="amilfida-modal-title">Entry Detail</h3>
+                    <button id="amilfida-modal-close" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">&times;</button>
                 </div>
-                <div id="mfdc-modal-body" style="padding:22px;"></div>
+                <div id="amilfida-modal-body" style="padding:22px;"></div>
             </div>
         </div>
         <?php
@@ -367,7 +367,7 @@ class Admin {
     
     private function get_chart_data() {
         global $wpdb;
-        $table_entries = $wpdb->prefix . 'mfdc_entries';
+        $table_entries = $wpdb->prefix . 'amilfida_entries';
         
         // Entries per day (last 30 days)
         $entries_per_day = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -398,13 +398,13 @@ class Admin {
         // Field types distribution
         $field_types = [];
         $projects = get_posts([
-            'post_type' => 'mfdc_project',
+            'post_type' => 'amilfida_project',
             'posts_per_page' => -1,
             'post_status' => 'publish'
         ]);
         
         foreach ($projects as $project) {
-            $form_structure = get_post_meta($project->ID, '_mfdc_form_structure', true);
+            $form_structure = get_post_meta($project->ID, '_amilfida_form_structure', true);
             if ($form_structure) {
                 $data = json_decode($form_structure, true);
                 if (isset($data['fields'])) {
@@ -439,7 +439,7 @@ class Admin {
      * AJAX handler: soft-delete an entry.
      */
     public function ajax_delete_entry() {
-        check_ajax_referer('mfdc_admin_nonce', 'nonce');
+        check_ajax_referer('amilfida_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Unauthorized'], 403);
@@ -460,29 +460,29 @@ class Admin {
     }
 
     public function render_settings() {
-        if (isset($_POST['mfdc_save_settings'])) {
-            check_admin_referer('mfdc_settings');
+        if (isset($_POST['amilfida_save_settings'])) {
+            check_admin_referer('amilfida_settings');
 
             if (!current_user_can('manage_options')) {
                 wp_die(esc_html__('Unauthorized', 'amilu-field-data-collection'));
             }
 
             if (isset($_POST['generate_api_key'])) {
-                update_option('mfdc_api_key', bin2hex(random_bytes(32)));
+                update_option('amilfida_api_key', bin2hex(random_bytes(32)));
             }
 
             echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved.', 'amilu-field-data-collection') . '</p></div>';
         }
 
-        $api_key = get_option('mfdc_api_key');
-        $pwa_url = home_url('/mfdc-app/');
+        $api_key = get_option('amilfida_api_key');
+        $pwa_url = home_url('/amilfida-app/');
 
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Amilu Field Data Collection Settings', 'amilu-field-data-collection'); ?></h1>
 
             <form method="post">
-                <?php wp_nonce_field('mfdc_settings'); ?>
+                <?php wp_nonce_field('amilfida_settings'); ?>
 
                 <table class="form-table">
                     <tr>
@@ -504,7 +504,7 @@ class Admin {
                     <tr>
                         <th scope="row"><?php esc_html_e('API Endpoint', 'amilu-field-data-collection'); ?></th>
                         <td>
-                            <code><?php echo esc_url(rest_url('mfdc/v1')); ?></code>
+                            <code><?php echo esc_url(rest_url('amilfida/v1')); ?></code>
                             <p class="description"><?php esc_html_e('Use this endpoint URL in your mobile app.', 'amilu-field-data-collection'); ?></p>
                         </td>
                     </tr>
@@ -521,7 +521,7 @@ class Admin {
                 </table>
 
                 <p class="submit">
-                    <input type="submit" name="mfdc_save_settings" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'amilu-field-data-collection'); ?>" />
+                    <input type="submit" name="amilfida_save_settings" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'amilu-field-data-collection'); ?>" />
                 </p>
             </form>
         </div>

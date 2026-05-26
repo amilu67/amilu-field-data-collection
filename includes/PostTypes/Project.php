@@ -1,5 +1,5 @@
 <?php
-namespace MFDataCollection\PostTypes;
+namespace Amilfida\PostTypes;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -9,7 +9,7 @@ class Project {
     public function __construct() {
         add_action('init', [$this, 'register_post_type']);
         add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
-        add_action('save_post_mfdc_project', [$this, 'save_meta_boxes']);
+        add_action('save_post_amilfida_project', [$this, 'save_meta_boxes']);
     }
 
     public function register_post_type() {
@@ -26,7 +26,7 @@ class Project {
             'not_found_in_trash' => __('No projects found in trash', 'amilu-field-data-collection'),
         ];
 
-        register_post_type('mfdc_project', [
+        register_post_type('amilfida_project', [
             'labels'        => $labels,
             'public'        => false,
             'show_ui'       => true,
@@ -37,25 +37,25 @@ class Project {
             'supports'      => ['title', 'editor', 'author'],
             'has_archive'   => false,
             'show_in_rest'  => true,
-            'rest_base'     => 'mfdc-projects',
+            'rest_base'     => 'amilfida-projects',
         ]);
     }
 
     public function add_meta_boxes() {
         add_meta_box(
-            'mfdc_project_form',
+            'amilfida_project_form',
             __('Form Builder — Drag & Drop', 'amilu-field-data-collection'),
             [$this, 'render_form_builder'],
-            'mfdc_project',
+            'amilfida_project',
             'normal',
             'high'
         );
 
         add_meta_box(
-            'mfdc_project_settings',
+            'amilfida_project_settings',
             __('Project Settings', 'amilu-field-data-collection'),
             [$this, 'render_settings'],
-            'mfdc_project',
+            'amilfida_project',
             'side',
             'default'
         );
@@ -66,82 +66,82 @@ class Project {
      * All logic lives in assets/js/form-builder.js.
      */
     public function render_form_builder($post) {
-        wp_nonce_field('mfdc_project_meta', 'mfdc_project_nonce');
+        wp_nonce_field('amilfida_project_meta', 'amilfida_project_nonce');
 
-        $form_structure = get_post_meta($post->ID, '_mfdc_form_structure', true);
+        $form_structure = get_post_meta($post->ID, '_amilfida_form_structure', true);
         if (empty($form_structure)) {
             $form_structure = wp_json_encode(['fields' => []]);
         }
         ?>
-        <div id="mfdc-form-builder" class="mfdc-builder">
+        <div id="amilfida-form-builder" class="amilfida-builder">
             <!-- Left: Palette -->
-            <div class="mfdc-palette">
-                <div class="mfdc-palette-header"><i class="fa-solid fa-puzzle-piece"></i> Fields</div>
-                <div class="mfdc-palette-body"></div>
+            <div class="amilfida-palette">
+                <div class="amilfida-palette-header"><i class="fa-solid fa-puzzle-piece"></i> Fields</div>
+                <div class="amilfida-palette-body"></div>
             </div>
 
             <!-- Center: Canvas -->
-            <div class="mfdc-canvas">
-                <div class="mfdc-canvas-header">
+            <div class="amilfida-canvas">
+                <div class="amilfida-canvas-header">
                     <h3><i class="fa-solid fa-layer-group"></i> Form Fields</h3>
-                    <span class="mfdc-canvas-count">0 fields</span>
+                    <span class="amilfida-canvas-count">0 fields</span>
                 </div>
-                <div class="mfdc-dropzone"></div>
+                <div class="amilfida-dropzone"></div>
             </div>
 
             <!-- Right: Properties -->
-            <div class="mfdc-properties">
-                <div class="mfdc-properties-header"><i class="fa-solid fa-sliders"></i> Properties</div>
-                <div class="mfdc-properties-body"></div>
+            <div class="amilfida-properties">
+                <div class="amilfida-properties-header"><i class="fa-solid fa-sliders"></i> Properties</div>
+                <div class="amilfida-properties-body"></div>
             </div>
 
             <!-- Bottom: Live Preview -->
-            <div class="mfdc-preview-panel">
-                <div class="mfdc-preview-toggle">
+            <div class="amilfida-preview-panel">
+                <div class="amilfida-preview-toggle">
                     <i class="fa-solid fa-chevron-right"></i>
                     <span><i class="fa-solid fa-mobile-screen"></i> Mobile Preview</span>
                 </div>
-                <div class="mfdc-preview-body">
-                    <div class="mfdc-phone-frame">
-                        <div class="mfdc-phone-notch"><div class="mfdc-phone-notch-inner"></div></div>
-                        <div class="mfdc-phone-screen"></div>
-                        <div class="mfdc-phone-submit"><button type="button">Submit Entry</button></div>
+                <div class="amilfida-preview-body">
+                    <div class="amilfida-phone-frame">
+                        <div class="amilfida-phone-notch"><div class="amilfida-phone-notch-inner"></div></div>
+                        <div class="amilfida-phone-screen"></div>
+                        <div class="amilfida-phone-submit"><button type="button">Submit Entry</button></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <textarea name="mfdc_form_structure" id="mfdc_form_structure" style="display:none;"><?php echo esc_textarea($form_structure); ?></textarea>
+        <textarea name="amilfida_form_structure" id="amilfida_form_structure" style="display:none;"><?php echo esc_textarea($form_structure); ?></textarea>
         <?php
     }
 
     public function render_settings($post) {
-        $status          = get_post_meta($post->ID, '_mfdc_status', true);
-        $allow_anonymous = get_post_meta($post->ID, '_mfdc_allow_anonymous', true);
+        $status          = get_post_meta($post->ID, '_amilfida_status', true);
+        $allow_anonymous = get_post_meta($post->ID, '_amilfida_allow_anonymous', true);
         ?>
         <p>
             <label><strong><?php esc_html_e('Status:', 'amilu-field-data-collection'); ?></strong></label><br>
-            <select name="mfdc_status" class="widefat">
+            <select name="amilfida_status" class="widefat">
                 <option value="active" <?php selected($status, 'active'); ?>><?php esc_html_e('Active', 'amilu-field-data-collection'); ?></option>
                 <option value="inactive" <?php selected($status, 'inactive'); ?>><?php esc_html_e('Inactive', 'amilu-field-data-collection'); ?></option>
             </select>
         </p>
         <p>
             <label>
-                <input type="checkbox" name="mfdc_allow_anonymous" value="1" <?php checked($allow_anonymous, '1'); ?> />
+                <input type="checkbox" name="amilfida_allow_anonymous" value="1" <?php checked($allow_anonymous, '1'); ?> />
                 <?php esc_html_e('Allow anonymous submissions', 'amilu-field-data-collection'); ?>
             </label>
         </p>
         <p>
             <strong><?php esc_html_e('Project UUID:', 'amilu-field-data-collection'); ?></strong><br>
-            <code><?php echo esc_html(get_post_meta($post->ID, '_mfdc_uuid', true) ?: __('Not generated yet', 'amilu-field-data-collection')); ?></code>
+            <code><?php echo esc_html(get_post_meta($post->ID, '_amilfida_uuid', true) ?: __('Not generated yet', 'amilu-field-data-collection')); ?></code>
         </p>
         <?php
     }
 
     public function save_meta_boxes($post_id) {
-        if (!isset($_POST['mfdc_project_nonce']) ||
-            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mfdc_project_nonce'])), 'mfdc_project_meta')) {
+        if (!isset($_POST['amilfida_project_nonce']) ||
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['amilfida_project_nonce'])), 'amilfida_project_meta')) {
             return;
         }
 
@@ -154,28 +154,28 @@ class Project {
         }
 
         // Save form structure — validate JSON + sanitize every field recursively
-        if (isset($_POST['mfdc_form_structure'])) {
-            $raw = sanitize_text_field( wp_unslash($_POST['mfdc_form_structure']) );
+        if (isset($_POST['amilfida_form_structure'])) {
+            $raw = sanitize_text_field( wp_unslash($_POST['amilfida_form_structure']) );
             $decoded = json_decode($raw, true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                 $decoded['fields'] = self::sanitize_form_fields($decoded['fields'] ?? []);
-                update_post_meta($post_id, '_mfdc_form_structure', wp_json_encode($decoded));
+                update_post_meta($post_id, '_amilfida_form_structure', wp_json_encode($decoded));
             }
         }
 
         // Save settings
-        if (isset($_POST['mfdc_status'])) {
-            $status = sanitize_text_field( wp_unslash($_POST['mfdc_status']) );
+        if (isset($_POST['amilfida_status'])) {
+            $status = sanitize_text_field( wp_unslash($_POST['amilfida_status']) );
             if (in_array($status, ['active', 'inactive'], true)) {
-                update_post_meta($post_id, '_mfdc_status', $status);
+                update_post_meta($post_id, '_amilfida_status', $status);
             }
         }
 
-        update_post_meta($post_id, '_mfdc_allow_anonymous', isset($_POST['mfdc_allow_anonymous']) ? '1' : '0');
+        update_post_meta($post_id, '_amilfida_allow_anonymous', isset($_POST['amilfida_allow_anonymous']) ? '1' : '0');
 
         // Generate UUID if not exists
-        if (!get_post_meta($post_id, '_mfdc_uuid', true)) {
-            update_post_meta($post_id, '_mfdc_uuid', wp_generate_uuid4());
+        if (!get_post_meta($post_id, '_amilfida_uuid', true)) {
+            update_post_meta($post_id, '_amilfida_uuid', wp_generate_uuid4());
         }
     }
 

@@ -3,7 +3,7 @@
  * Renders form fields dynamically and collects values.
  * Integrates html5-qrcode for barcode/QR scanning.
  */
-const MfForm = (() => {
+const AmilfidaForm = (() => {
     let _fields = [];
     let _values = {};
     let _scanners = {};
@@ -176,7 +176,7 @@ const MfForm = (() => {
         const id = `field_${idx}`;
         const btn = document.getElementById(`${id}_btn`);
         const disp = document.getElementById(`${id}_display`);
-        if (!navigator.geolocation) { MfApp.toast('GPS not available'); return; }
+        if (!navigator.geolocation) { AmilfidaApp.toast('GPS not available'); return; }
 
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Acquiring…';
 
@@ -190,7 +190,7 @@ const MfForm = (() => {
             },
             err => {
                 btn.innerHTML = '<i class="fa-solid fa-location-dot"></i> Retry GPS';
-                MfApp.toast('GPS error: ' + err.message);
+                AmilfidaApp.toast('GPS error: ' + err.message);
             },
             { enableHighAccuracy: true, timeout: 15000 }
         );
@@ -210,7 +210,7 @@ const MfForm = (() => {
         }
 
         if (typeof Html5Qrcode === 'undefined') {
-            MfApp.toast('QR library not loaded');
+            AmilfidaApp.toast('QR library not loaded');
             return;
         }
 
@@ -234,7 +234,7 @@ const MfForm = (() => {
             () => {} // ignore scan errors
         ).catch(err => {
             btn.innerHTML = '<i class="fa-solid fa-qrcode"></i> Scan barcode / QR code';
-            MfApp.toast('Camera error: ' + err);
+            AmilfidaApp.toast('Camera error: ' + err);
         });
     }
 

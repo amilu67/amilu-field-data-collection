@@ -1,7 +1,7 @@
 /* Amilu Field Data Collection WP Admin Styles */
 
 /* Dashboard Stats */
-.mfdc-stats {
+.amilfida-stats {
     display: flex;
     gap: 16px;
     margin: 20px 0;
@@ -60,7 +60,7 @@
 }
 
 @media (max-width: 782px) {
-    .mfdc-stats { flex-direction: column; }
+    .amilfida-stats { flex-direction: column; }
     .stat-box { flex-basis: auto; }
     .stat-number { font-size: 32px; }
 }
@@ -178,7 +178,7 @@
 }
 
 /* Charts Container */
-.mfdc-charts {
+.amilfida-charts {
     margin-top: 30px;
 }
 
@@ -210,18 +210,18 @@
 }
 
 /* Entries Table */
-.mfdc-entries-table {
+.amilfida-entries-table {
     background: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.mfdc-entries-table .wp-list-table {
+.amilfida-entries-table .wp-list-table {
     border: none;
 }
 
-.mfdc-entries-table thead th {
+.amilfida-entries-table thead th {
     background: #f6f8fa;
     font-weight: 600;
     text-transform: uppercase;
@@ -231,11 +231,11 @@
     padding: 12px 10px;
 }
 
-.mfdc-entries-table tbody tr {
+.amilfida-entries-table tbody tr {
     transition: background-color 0.2s ease;
 }
 
-.mfdc-entries-table tbody tr:hover {
+.amilfida-entries-table tbody tr:hover {
     background-color: #f6f8fa;
 }
 
@@ -281,15 +281,15 @@
 }
 
 /* Project Meta Box */
-#mfdc_project_settings .inside {
+#amilfida_project_settings .inside {
     padding: 15px;
 }
 
-#mfdc_project_settings p {
+#amilfida_project_settings p {
     margin: 12px 0;
 }
 
-#mfdc_project_settings code {
+#amilfida_project_settings code {
     background: #f6f8fa;
     padding: 4px 8px;
     border-radius: 4px;
@@ -299,12 +299,12 @@
 }
 
 /* Settings Page */
-.mfdc-settings .form-table th {
+.amilfida-settings .form-table th {
     font-weight: 600;
     color: #24292f;
 }
 
-.mfdc-settings code {
+.amilfida-settings code {
     background: #f6f8fa;
     padding: 8px 12px;
     border-radius: 6px;
@@ -321,17 +321,17 @@
     50% { opacity: 0.5; }
 }
 
-.mfdc-loading {
+.amilfida-loading {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
 /* Empty State */
-.mfdc-empty-state {
+.amilfida-empty-state {
     text-align: center;
     padding: 60px 20px;
 }
 
-.mfdc-empty-state .dashicons {
+.amilfida-empty-state .dashicons {
     font-size: 80px;
     width: 80px;
     height: 80px;
@@ -339,20 +339,20 @@
     margin-bottom: 20px;
 }
 
-.mfdc-empty-state h3 {
+.amilfida-empty-state h3 {
     color: #57606a;
     font-size: 18px;
     margin-bottom: 10px;
 }
 
-.mfdc-empty-state p {
+.amilfida-empty-state p {
     color: #8c959f;
     margin-bottom: 20px;
 }
 
 /* Responsive */
 @media (max-width: 782px) {
-    .mfdc-stats {
+    .amilfida-stats {
         flex-direction: column;
     }
     
@@ -363,48 +363,48 @@
 }
 
 /* Success/Error Messages */
-.notice.mfdc-notice {
+.notice.amilfida-notice {
     border-left-width: 4px;
     border-radius: 4px;
     padding: 12px;
 }
 
-.notice.mfdc-notice p {
+.notice.amilfida-notice p {
     margin: 0.5em 0;
 }
 
 /* Tooltip */
-.mfdc-tooltip {
+.amilfida-tooltip {
     position: relative;
     display: inline-block;
     cursor: help;
 }
 
-.mfdc-tooltip .dashicons {
+.amilfida-tooltip .dashicons {
     color: #8c959f;
     font-size: 16px;
     width: 16px;
     height: 16px;
 }
 
-.mfdc-tooltip:hover .dashicons {
+.amilfida-tooltip:hover .dashicons {
     color: #2271b1;
 }
 
 /* Leaflet Map */
-#mfdc-dashboard-map,
-#mfdc-entries-map {
+#amilfida-dashboard-map,
+#amilfida-entries-map {
     background: #e5e7eb;
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-#mfdc-dashboard-map .leaflet-popup-content-wrapper,
-#mfdc-entries-map .leaflet-popup-content-wrapper {
+#amilfida-dashboard-map .leaflet-popup-content-wrapper,
+#amilfida-entries-map .leaflet-popup-content-wrapper {
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(0,0,0,.15);
 }
 
-.mfdc-map-marker {
+.amilfida-map-marker {
     background: transparent !important;
     border: none !important;
 }

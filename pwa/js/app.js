@@ -2,10 +2,10 @@
  * Amilu Field Data Collection PWA — Main Application
  * SPA router, project list, form filling, entries, settings.
  */
-const MfApp = (() => {
+const AmilfidaApp = (() => {
     /* ── Config ────────────────────────────────────────────── */
-    const LS_API_URL = 'mf_api_url';
-    const LS_API_KEY = 'mf_api_key';
+    const LS_API_URL = 'amilfida_api_url';
+    const LS_API_KEY = 'amilfida_api_key';
 
     function getApiUrl() { return localStorage.getItem(LS_API_URL) || ''; }
     function getApiKey() { return localStorage.getItem(LS_API_KEY) || ''; }
@@ -21,9 +21,9 @@ const MfApp = (() => {
 
     let currentView = 'projects';
     let currentProject = null;
-    const deviceId = localStorage.getItem('mf_device_id') || (() => {
+    const deviceId = localStorage.getItem('amilfida_device_id') || (() => {
         const id = 'dev_' + Math.random().toString(36).slice(2, 10);
-        localStorage.setItem('mf_device_id', id);
+        localStorage.setItem('amilfida_device_id', id);
         return id;
     })();
 
@@ -47,7 +47,7 @@ const MfApp = (() => {
 
     /* ── Sync badge ────────────────────────────────────────── */
     async function updateSyncBadge() {
-        const count = await MfDB.getPendingCount();
+        const count = await AmilfidaDB.getPendingCount();
         const banner = $syncBanner();
         const countEl = $syncCount();
         if (banner) banner.classList.toggle('visible', count > 0);
@@ -56,7 +56,7 @@ const MfApp = (() => {
 
     /* ── Navigation ────────────────────────────────────────── */
     function navigate(view, data) {
-        MfForm.cleanup();
+        AmilfidaForm.cleanup();
         currentView = view;
 
         const back = $back();
@@ -87,26 +87,26 @@ const MfApp = (() => {
                 });
                 if (res.ok) {
                     const projects = await res.json();
-                    await MfDB.saveProjects(projects);
+                    await AmilfidaDB.saveProjects(projects);
                 }
             } catch (_) {}
         }
 
-        const projects = await MfDB.getProjects();
+        const projects = await AmilfidaDB.getProjects();
 
         if (!projects.length) {
             main.innerHTML = `<div class="empty-state">
                 <i class="fa-solid fa-folder-open"></i>
                 <h3>No projects</h3>
                 <p>${apiUrl ? 'No active projects found on the server.' : 'Configure the API URL in Settings first.'}</p>
-                <button class="btn btn-primary" onclick="MfApp.navigate('settings')"><i class="fa-solid fa-gear"></i> Go to Settings</button>
+                <button class="btn btn-primary" onclick="AmilfidaApp.navigate('settings')"><i class="fa-solid fa-gear"></i> Go to Settings</button>
             </div>`;
             return;
         }
 
         main.innerHTML = projects.map(p => {
             const fieldCount = p.form_structure?.fields?.length || 0;
-            return `<div class="card" onclick="MfApp.navigate('form', ${p.id})">
+            return `<div class="card" onclick="AmilfidaApp.navigate('form', ${p.id})">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
                     <div>
@@ -121,7 +121,7 @@ const MfApp = (() => {
 
     /* ── Form View ─────────────────────────────────────────── */
     async function renderForm(projectId) {
-        const project = await MfDB.getProject(projectId);
+        const project = await AmilfidaDB.getProject(projectId);
         if (!project) { navigate('projects'); return; }
 
         currentProject = project;
@@ -140,13 +140,13 @@ const MfApp = (() => {
         const main = $main();
         main.innerHTML = '<div id="form-fields"></div><div style="height:20px;"></div><button class="btn btn-primary" id="submit-entry"><i class="fa-solid fa-paper-plane"></i> Submit Entry</button>';
 
-        MfForm.render(document.getElementById('form-fields'), fields);
+        AmilfidaForm.render(document.getElementById('form-fields'), fields);
 
         document.getElementById('submit-entry').addEventListener('click', submitEntry);
     }
 
     async function submitEntry() {
-        const { valid, data, errors } = MfForm.validate();
+        const { valid, data, errors } = AmilfidaForm.validate();
         if (!valid) {
             toast(errors[0].msg);
             return;
@@ -174,13 +174,13 @@ const MfApp = (() => {
             synced: 0,
         };
 
-        await MfDB.saveEntry(entry);
+        await AmilfidaDB.saveEntry(entry);
         toast('Entry saved!');
-        MfForm.cleanup();
+        AmilfidaForm.cleanup();
 
         // Try immediate sync
         if (navigator.onLine) {
-            MfSync.syncAll();
+            AmilfidaSync.syncAll();
         }
 
         await updateSyncBadge();
@@ -191,11 +191,11 @@ const MfApp = (() => {
     async function renderEntriesList() {
         $title().textContent = 'My Entries';
         const main = $main();
-        const projects = await MfDB.getProjects();
+        const projects = await AmilfidaDB.getProjects();
 
         let html = '';
         for (const p of projects) {
-            const entries = await MfDB.getEntriesByProject(p.id);
+            const entries = await AmilfidaDB.getEntriesByProject(p.id);
             if (!entries.length) continue;
 
             html += `<h4 style="font-size:13px;color:var(--text-secondary);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.5px;">${esc(p.name)}</h4>`;
@@ -234,7 +234,7 @@ const MfApp = (() => {
             <div class="setting-item">
                 <i class="fa-solid fa-server"></i>
                 <span class="setting-label">API URL</span>
-                <input type="url" id="set-api-url" value="${esc(getApiUrl())}" placeholder="https://yoursite.com/wp-json/mfdc/v1" />
+                <input type="url" id="set-api-url" value="${esc(getApiUrl())}" placeholder="https://yoursite.com/wp-json/amilfida/v1" />
             </div>
             <div class="setting-item">
                 <i class="fa-solid fa-key"></i>
@@ -269,7 +269,7 @@ const MfApp = (() => {
         });
 
         document.getElementById('force-sync').addEventListener('click', () => {
-            MfSync.syncAll();
+            AmilfidaSync.syncAll();
             toast('Sync started…');
         });
     }
@@ -279,7 +279,7 @@ const MfApp = (() => {
 
     /* ── Init ──────────────────────────────────────────────── */
     async function init() {
-        await MfDB.init();
+        await AmilfidaDB.init();
 
         // Set API URL from injected placeholder (if served via WP)
         const injectedUrl = document.body.dataset.restUrl;
@@ -300,7 +300,7 @@ const MfApp = (() => {
         $back().addEventListener('click', () => navigate('projects'));
 
         // Sync banner click
-        $syncBanner()?.addEventListener('click', () => MfSync.syncAll());
+        $syncBanner()?.addEventListener('click', () => AmilfidaSync.syncAll());
 
         updateOnlineStatus();
         await updateSyncBadge();

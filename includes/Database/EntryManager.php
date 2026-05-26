@@ -1,5 +1,5 @@
 <?php
-namespace MFDataCollection\Database;
+namespace Amilfida\Database;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -15,8 +15,8 @@ class EntryManager {
 
     public function __construct() {
         global $wpdb;
-        $this->table_entries = $wpdb->prefix . 'mfdc_entries';
-        $this->table_media   = $wpdb->prefix . 'mfdc_media';
+        $this->table_entries = $wpdb->prefix . 'amilfida_entries';
+        $this->table_media   = $wpdb->prefix . 'amilfida_media';
     }
 
     public function create_entry($data) {

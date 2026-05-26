@@ -1,5 +1,5 @@
 <?php
-namespace MFDataCollection;
+namespace Amilfida;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,7 +18,7 @@ class Installer {
 
         $charset_collate = $wpdb->get_charset_collate();
 
-        $table_entries = $wpdb->prefix . 'mfdc_entries';
+        $table_entries = $wpdb->prefix . 'amilfida_entries';
         $sql_entries = "CREATE TABLE IF NOT EXISTS $table_entries (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             project_id bigint(20) NOT NULL,
@@ -40,7 +40,7 @@ class Installer {
             KEY created_at (created_at)
         ) $charset_collate;";
 
-        $table_media = $wpdb->prefix . 'mfdc_media';
+        $table_media = $wpdb->prefix . 'amilfida_media';
         $sql_media = "CREATE TABLE IF NOT EXISTS $table_media (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             entry_id bigint(20) NOT NULL,
@@ -60,19 +60,19 @@ class Installer {
         dbDelta($sql_entries);
         dbDelta($sql_media);
 
-        update_option('mfdatacollection_db_version', MFDC_VERSION);
+        update_option('amilfida_db_version', AMILFIDA_VERSION);
     }
 
     private static function create_upload_directory() {
         $upload_dir = wp_upload_dir();
-        $mfdc_dir = $upload_dir['basedir'] . '/mfdc-data';
+        $amilfida_dir = $upload_dir['basedir'] . '/amilfida-data';
 
-        if (!file_exists($mfdc_dir)) {
-            wp_mkdir_p($mfdc_dir);
+        if (!file_exists($amilfida_dir)) {
+            wp_mkdir_p($amilfida_dir);
         }
 
         // Always refresh security files
-        $htaccess = $mfdc_dir . '/.htaccess';
+        $htaccess = $amilfida_dir . '/.htaccess';
         $htaccess_content = "Options -Indexes\nDeny from all\n<FilesMatch \"\.(jpg|jpeg|png|gif|webp|mp3|mp4|wav|webm|pdf)$\">\nAllow from all\n</FilesMatch>";
 
         global $wp_filesystem;
@@ -83,7 +83,7 @@ class Installer {
         $wp_filesystem->put_contents($htaccess, $htaccess_content, FS_CHMOD_FILE);
 
         // Blank index.php
-        $index = $mfdc_dir . '/index.php';
+        $index = $amilfida_dir . '/index.php';
         if (!file_exists($index)) {
             $wp_filesystem->put_contents($index, '<?php // Silence is golden.', FS_CHMOD_FILE);
         }
@@ -102,7 +102,7 @@ class Installer {
         }
 
         foreach ($dirs as $dir) {
-            $path = MFDC_PLUGIN_DIR . $dir . '/index.php';
+            $path = AMILFIDA_PLUGIN_DIR . $dir . '/index.php';
             if (!file_exists($path)) {
                 wp_mkdir_p(dirname($path));
                 $wp_filesystem->put_contents($path, '<?php // Silence is golden.', FS_CHMOD_FILE);

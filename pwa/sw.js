@@ -2,7 +2,7 @@
  * Amilu Field Data Collection WP — Service Worker
  * Cache-first for app shell, network-first for API calls.
  */
-const CACHE_NAME = 'mfdc-v4';
+const CACHE_NAME = 'amilfida-v1';
 
 // Only precache PWA shell assets served from within the pwa/ directory.
 // Vendor assets (Font Awesome, html5-qrcode) are loaded on-demand and
@@ -36,7 +36,7 @@ self.addEventListener('fetch', e => {
     const url = new URL(e.request.url);
 
     // API calls → network-first
-    if (url.pathname.includes('/wp-json/mfdc/')) {
+    if (url.pathname.includes('/wp-json/amilfida/')) {
         e.respondWith(
             fetch(e.request).catch(() => caches.match(e.request))
         );

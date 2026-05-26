@@ -2,7 +2,7 @@
     "name": "Amilu Field Data Collection",
     "short_name": "Amilu Data",
     "description": "Offline-first mobile data collection app",
-    "start_url": "/mfdc-app/",
+    "start_url": "/amilfida-app/",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait",

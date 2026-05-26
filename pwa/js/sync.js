@@ -2,7 +2,7 @@
  * Amilu Field Data Collection PWA — Sync Engine
  * Uploads pending entries when online, updates pending badge.
  */
-const MfSync = (() => {
+const AmilfidaSync = (() => {
     let syncing = false;
 
     async function syncAll() {
@@ -10,11 +10,11 @@ const MfSync = (() => {
         syncing = true;
 
         try {
-            const pending = await MfDB.getPendingEntries();
+            const pending = await AmilfidaDB.getPendingEntries();
             if (!pending.length) return;
 
-            const apiUrl = MfApp.getApiUrl();
-            const apiKey = MfApp.getApiKey();
+            const apiUrl = AmilfidaApp.getApiUrl();
+            const apiKey = AmilfidaApp.getApiKey();
             if (!apiUrl || !apiKey) return;
 
             for (const entry of pending) {
@@ -39,7 +39,7 @@ const MfSync = (() => {
                     });
 
                     if (res.ok) {
-                        await MfDB.markSynced(entry.uuid);
+                        await AmilfidaDB.markSynced(entry.uuid);
                     }
                 } catch (_) {
                     // Will retry next cycle
@@ -47,16 +47,16 @@ const MfSync = (() => {
             }
         } finally {
             syncing = false;
-            MfApp.updateSyncBadge();
+            AmilfidaApp.updateSyncBadge();
         }
     }
 
     // Auto-sync when coming online
     window.addEventListener('online', () => {
-        MfApp.updateOnlineStatus();
+        AmilfidaApp.updateOnlineStatus();
         syncAll();
     });
-    window.addEventListener('offline', () => MfApp.updateOnlineStatus());
+    window.addEventListener('offline', () => AmilfidaApp.updateOnlineStatus());
 
     // Periodic sync every 30s
     setInterval(() => { if (navigator.onLine) syncAll(); }, 30000);

@@ -2,8 +2,8 @@
  * Amilu Field Data Collection PWA — IndexedDB wrapper
  * Stores projects (cached) and entries (pending sync).
  */
-const MfDB = (() => {
-    const DB_NAME = 'mfdc_pwa';
+const AmilfidaDB = (() => {
+    const DB_NAME = 'amilfida_pwa';
     const DB_VERSION = 1;
     let _db = null;
 

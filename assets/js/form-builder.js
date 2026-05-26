@@ -66,10 +66,10 @@
         }
         let html = '';
         for (const [group, items] of Object.entries(grouped)) {
-            html += `<div class="mfdc-palette-group">
-                <div class="mfdc-palette-group-title">${GROUP_LABELS[group] || group}</div>`;
+            html += `<div class="amilfida-palette-group">
+                <div class="amilfida-palette-group-title">${GROUP_LABELS[group] || group}</div>`;
             for (const item of items) {
-                html += `<div class="mfdc-palette-item" draggable="true" data-type="${item.type}">
+                html += `<div class="amilfida-palette-item" draggable="true" data-type="${item.type}">
                     <i class="${item.icon}"></i> ${item.label}
                 </div>`;
             }
@@ -78,7 +78,7 @@
         container.innerHTML = html;
 
         // Palette drag events
-        container.querySelectorAll('.mfdc-palette-item').forEach(el => {
+        container.querySelectorAll('.amilfida-palette-item').forEach(el => {
             el.addEventListener('dragstart', e => {
                 dragFromPalette = el.dataset.type;
                 dragSrcIndex = -1;
@@ -96,7 +96,7 @@
     /* ── Drop zone rendering ──────────────────────────────────── */
     function renderDropzone() {
         if (fields.length === 0) {
-            $dropzone.innerHTML = `<div class="mfdc-dropzone-empty">
+            $dropzone.innerHTML = `<div class="amilfida-dropzone-empty">
                 <i class="fa-solid fa-arrow-down-to-bracket"></i>
                 <p><strong>Drag fields here</strong></p>
                 <p>Choose from the palette on the left</p>
@@ -106,18 +106,18 @@
                 const meta = FIELD_TYPES[f.type] || FIELD_TYPES.text;
                 const hasJumps = f.jumps && (f.jumps.length > 0 || f.jump_always);
                 const jumpBadge = hasJumps
-                    ? '<span class="mfdc-field-jump-badge" title="Has flow logic"><i class="fa-solid fa-code-branch"></i></span>'
+                    ? '<span class="amilfida-field-jump-badge" title="Has flow logic"><i class="fa-solid fa-code-branch"></i></span>'
                     : '';
-                return `<div class="mfdc-field-card ${i === selectedIndex ? 'selected' : ''}"
+                return `<div class="amilfida-field-card ${i === selectedIndex ? 'selected' : ''}"
                              draggable="true" data-index="${i}">
-                    <span class="mfdc-drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
-                    <span class="mfdc-field-icon mfdc-type-${f.type}"><i class="${meta.icon}"></i></span>
-                    <div class="mfdc-field-info">
+                    <span class="amilfida-drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
+                    <span class="amilfida-field-icon amilfida-type-${f.type}"><i class="${meta.icon}"></i></span>
+                    <div class="amilfida-field-info">
                         <div class="field-label">${escHtml(f.label)}</div>
                         <div class="field-type">${meta.label}${jumpBadge}</div>
                     </div>
-                    ${f.required ? '<span class="mfdc-field-required">REQUIRED</span>' : ''}
-                    <div class="mfdc-field-actions">
+                    ${f.required ? '<span class="amilfida-field-required">REQUIRED</span>' : ''}
+                    <div class="amilfida-field-actions">
                         <button type="button" class="btn-dup" title="Duplicate" data-idx="${i}"><i class="fa-solid fa-clone"></i></button>
                         <button type="button" class="btn-delete" title="Delete" data-idx="${i}"><i class="fa-solid fa-trash"></i></button>
                     </div>
@@ -131,7 +131,7 @@
     }
 
     function bindCardEvents() {
-        $dropzone.querySelectorAll('.mfdc-field-card').forEach(card => {
+        $dropzone.querySelectorAll('.amilfida-field-card').forEach(card => {
             card.addEventListener('click', () => {
                 selectedIndex = +card.dataset.index;
                 renderDropzone();
@@ -188,7 +188,7 @@
             $dropzone.classList.remove('drag-over');
 
             // Determine drop index
-            const cards = [...$dropzone.querySelectorAll('.mfdc-field-card')];
+            const cards = [...$dropzone.querySelectorAll('.amilfida-field-card')];
             let dropIdx = fields.length;
             for (let i = 0; i < cards.length; i++) {
                 const rect = cards[i].getBoundingClientRect();
@@ -238,7 +238,7 @@
     /* ── Properties panel ─────────────────────────────────────── */
     function renderProperties() {
         if (selectedIndex < 0 || selectedIndex >= fields.length) {
-            $props.innerHTML = `<div class="mfdc-properties-empty">
+            $props.innerHTML = `<div class="amilfida-properties-empty">
                 <i class="fa-solid fa-hand-pointer"></i>
                 Select a field to edit its properties
             </div>`;
@@ -249,30 +249,30 @@
         const v = f.validation || {};
 
         let html = `
-            <div class="mfdc-prop-group">
+            <div class="amilfida-prop-group">
                 <label>Field Type</label>
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="mfdc-field-icon mfdc-type-${f.type}" style="width:26px;height:26px;font-size:12px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;color:#fff;">
+                    <span class="amilfida-field-icon amilfida-type-${f.type}" style="width:26px;height:26px;font-size:12px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;color:#fff;">
                         <i class="${meta.icon}"></i>
                     </span>
                     <strong style="font-size:13px;">${meta.label}</strong>
                 </div>
             </div>
-            <div class="mfdc-prop-group">
+            <div class="amilfida-prop-group">
                 <label for="prop-label">Label</label>
                 <input type="text" id="prop-label" value="${escAttr(f.label)}" />
             </div>
-            <div class="mfdc-prop-group mfdc-prop-toggle">
+            <div class="amilfida-prop-group amilfida-prop-toggle">
                 <label style="margin:0;">Required</label>
-                <div class="mfdc-toggle">
+                <div class="amilfida-toggle">
                     <input type="checkbox" id="prop-required" ${f.required ? 'checked' : ''} />
-                    <span class="mfdc-toggle-slider"></span>
+                    <span class="amilfida-toggle-slider"></span>
                 </div>
             </div>`;
 
         // Options for choice fields
         if (f.options) {
-            html += `<div class="mfdc-prop-group">
+            html += `<div class="amilfida-prop-group">
                 <label for="prop-options">Options (one per line)</label>
                 <textarea id="prop-options">${escHtml((f.options || []).join('\n'))}</textarea>
             </div>`;
@@ -280,7 +280,7 @@
 
         // Placeholder for text-like fields
         if (['text', 'textarea', 'email', 'phone', 'url', 'number'].includes(f.type)) {
-            html += `<div class="mfdc-prop-group">
+            html += `<div class="amilfida-prop-group">
                 <label for="prop-placeholder">Placeholder</label>
                 <input type="text" id="prop-placeholder" value="${escAttr(f.placeholder || '')}" placeholder="Hint text shown in empty field" />
             </div>`;
@@ -288,15 +288,15 @@
 
         // Validation for text-like
         if (['text', 'textarea', 'email', 'phone', 'url'].includes(f.type)) {
-            html += `<div class="mfdc-prop-group">
+            html += `<div class="amilfida-prop-group">
                 <label>Min Length</label>
                 <input type="number" id="prop-v-minLength" value="${v.minLength ?? ''}" min="0" />
             </div>
-            <div class="mfdc-prop-group">
+            <div class="amilfida-prop-group">
                 <label>Max Length</label>
                 <input type="number" id="prop-v-maxLength" value="${v.maxLength ?? ''}" min="0" />
             </div>
-            <div class="mfdc-prop-group">
+            <div class="amilfida-prop-group">
                 <label>Pattern (Regex)</label>
                 <input type="text" id="prop-v-pattern" value="${escAttr(v.pattern || '')}" placeholder="e.g. ^[A-Z]{2}\\d{4}$" />
             </div>`;
@@ -304,11 +304,11 @@
 
         // Validation for number / range / rating
         if (['number', 'range', 'rating'].includes(f.type)) {
-            html += `<div class="mfdc-prop-group">
+            html += `<div class="amilfida-prop-group">
                 <label>Min Value</label>
                 <input type="number" id="prop-v-min" value="${v.min ?? ''}" step="any" />
             </div>
-            <div class="mfdc-prop-group">
+            <div class="amilfida-prop-group">
                 <label>Max Value</label>
                 <input type="number" id="prop-v-max" value="${v.max ?? ''}" step="any" />
             </div>`;
@@ -316,14 +316,14 @@
 
         // Step for number / range
         if (['number', 'range'].includes(f.type)) {
-            html += `<div class="mfdc-prop-group">
+            html += `<div class="amilfida-prop-group">
                 <label>Step</label>
                 <input type="number" id="prop-v-step" value="${v.step ?? ''}" min="0" step="any" placeholder="e.g. 0.5" />
             </div>`;
         }
 
         // Custom error message for all
-        html += `<div class="mfdc-prop-group">
+        html += `<div class="amilfida-prop-group">
             <label>Custom Error Message</label>
             <input type="text" id="prop-v-message" value="${escAttr(v.message || '')}" placeholder="Validation error text" />
         </div>`;
@@ -389,7 +389,7 @@
         const isChoice = ['select', 'radio'].includes(f.type);
         if (!f.jumps) f.jumps = [];
 
-        let html = `<div class="mfdc-prop-group" style="border-top:2px solid #667eea;margin-top:8px;padding-top:14px;">
+        let html = `<div class="amilfida-prop-group" style="border-top:2px solid #667eea;margin-top:8px;padding-top:14px;">
             <label style="color:#667eea;font-size:12px;"><i class="fa-solid fa-code-branch"></i> FLOW LOGIC</label>
             <p style="font-size:11px;color:#8b949e;margin:4px 0 10px;">Control which question appears next based on the answer.</p>`;
 
@@ -519,17 +519,17 @@
 
     /* ── Init ─────────────────────────────────────────────────── */
     function init() {
-        const builder = document.getElementById('mfdc-form-builder');
+        const builder = document.getElementById('amilfida-form-builder');
         if (!builder) return;
 
-        $textarea = document.getElementById('mfdc_form_structure');
-        $dropzone = builder.querySelector('.mfdc-dropzone');
-        $props = builder.querySelector('.mfdc-properties-body');
-        $countBadge = builder.querySelector('.mfdc-canvas-count');
-        $previewScreen = builder.querySelector('.mfdc-phone-screen');
+        $textarea = document.getElementById('amilfida_form_structure');
+        $dropzone = builder.querySelector('.amilfida-dropzone');
+        $props = builder.querySelector('.amilfida-properties-body');
+        $countBadge = builder.querySelector('.amilfida-canvas-count');
+        $previewScreen = builder.querySelector('.amilfida-phone-screen');
 
         // Build palette
-        buildPalette(builder.querySelector('.mfdc-palette-body'));
+        buildPalette(builder.querySelector('.amilfida-palette-body'));
 
         // Load existing
         try {
@@ -542,8 +542,8 @@
         renderProperties();
 
         // Preview toggle
-        const toggle = builder.querySelector('.mfdc-preview-toggle');
-        const body = builder.querySelector('.mfdc-preview-body');
+        const toggle = builder.querySelector('.amilfida-preview-toggle');
+        const body = builder.querySelector('.amilfida-preview-body');
         if (toggle && body) {
             toggle.addEventListener('click', () => {
                 toggle.classList.toggle('open');

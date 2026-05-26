@@ -4,13 +4,13 @@ jQuery(document).ready(function($) {
     'use strict';
 
     // Initialize Charts if Chart.js is available and we're on dashboard page
-    if (typeof Chart !== 'undefined' && $('#mfdc-charts').length) {
+    if (typeof Chart !== 'undefined' && $('#amilfida-charts').length) {
         initializeCharts();
     }
 
     // Initialize Leaflet map on Entries page
-    if (typeof L !== 'undefined' && $('#mfdc-entries-map').length && window.mfdcMapMarkers) {
-        initLeafletMap('mfdc-entries-map', window.mfdcMapMarkers);
+    if (typeof L !== 'undefined' && $('#amilfida-entries-map').length && window.amilfidaMapMarkers) {
+        initLeafletMap('amilfida-entries-map', window.amilfidaMapMarkers);
     }
 
     // Add smooth animations to stats
@@ -40,15 +40,15 @@ jQuery(document).ready(function($) {
     });
 
     // Close modal
-    $(document).on('click', '#mfdc-modal-close, #mfdc-entry-modal', function(e) {
-        if (e.target === this) $('#mfdc-entry-modal').css('display', 'none');
+    $(document).on('click', '#amilfida-modal-close, #amilfida-entry-modal', function(e) {
+        if (e.target === this) $('#amilfida-entry-modal').css('display', 'none');
     });
     $(document).on('keydown', function(e) {
-        if (e.key === 'Escape') $('#mfdc-entry-modal').css('display', 'none');
+        if (e.key === 'Escape') $('#amilfida-entry-modal').css('display', 'none');
     });
 
     // Delete entry
-    $(document).on('click', '.mfdc-delete-entry', function(e) {
+    $(document).on('click', '.amilfida-delete-entry', function(e) {
         e.preventDefault();
         const btn = $(this);
         const entryId = btn.data('id');
@@ -59,9 +59,9 @@ jQuery(document).ready(function($) {
 
         btn.prop('disabled', true).text('Deleting…');
 
-        $.post(mfdcAdmin.ajaxUrl, {
-            action: 'mfdc_delete_entry',
-            nonce: mfdcAdmin.nonce,
+        $.post(amilfidaAdmin.ajaxUrl, {
+            action: 'amilfida_delete_entry',
+            nonce: amilfidaAdmin.nonce,
             entry_id: entryId
         })
         .done(function(res) {
@@ -83,7 +83,7 @@ function initializeCharts() {
     const $ = jQuery;
     
     // Get chart data from page
-    const chartData = window.mfdcChartData || {};
+    const chartData = window.amilfidaChartData || {};
     
     // Entries per day chart
     if ($('#entriesPerDayChart').length && chartData.entriesPerDay) {
@@ -279,9 +279,9 @@ function createPieChart(canvasId, data) {
 
 function showEntryModal(entry) {
     const $ = jQuery;
-    const modal = $('#mfdc-entry-modal');
-    const title = $('#mfdc-modal-title');
-    const body = $('#mfdc-modal-body');
+    const modal = $('#amilfida-entry-modal');
+    const title = $('#amilfida-modal-title');
+    const body = $('#amilfida-modal-body');
 
     title.text(entry.title || 'Entry #' + entry.id);
 
@@ -296,7 +296,7 @@ function showEntryModal(entry) {
 
     // Show entry_data fields with human-readable labels
     if (entry.entry_data && typeof entry.entry_data === 'object') {
-        const labels = window.mfdcFieldLabels || {};
+        const labels = window.amilfidaFieldLabels || {};
         html += '<tr><td colspan="2" style="padding:14px 0 6px;"><strong style="font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#667eea;">Form Data</strong></td></tr>';
         for (const [key, value] of Object.entries(entry.entry_data)) {
             let display = '';
@@ -347,7 +347,7 @@ function initLeafletMap(containerId, markers) {
         bounds.extend(latlng);
 
         const icon = L.divIcon({
-            className: 'mfdc-map-marker',
+            className: 'amilfida-map-marker',
             html: '<div style="background:' + markerColor + ';width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
             iconSize: [20, 20],
             iconAnchor: [10, 10],
@@ -359,7 +359,7 @@ function initLeafletMap(containerId, markers) {
             '<strong style="font-size:13px;">' + escHtml(m.title) + '</strong><br>' +
             '<span style="font-size:11px;color:#6b7280;">' + escHtml(m.date) + '</span><br>' +
             '<span style="font-size:11px;color:#6b7280;">' + m.lat.toFixed(5) + ', ' + m.lng.toFixed(5) + '</span><br>' +
-            '<a href="#" class="mfdc-map-view-entry" data-id="' + m.id + '" style="font-size:12px;color:#667eea;font-weight:600;">View Details &rarr;</a>' +
+            '<a href="#" class="amilfida-map-view-entry" data-id="' + m.id + '" style="font-size:12px;color:#667eea;font-weight:600;">View Details &rarr;</a>' +
             '</div>';
 
         marker.bindPopup(popupHtml);
@@ -369,7 +369,7 @@ function initLeafletMap(containerId, markers) {
 
     // Handle "View Details" click inside popup
     map.on('popupopen', function() {
-        jQuery('.mfdc-map-view-entry').off('click').on('click', function(e) {
+        jQuery('.amilfida-map-view-entry').off('click').on('click', function(e) {
             e.preventDefault();
             const entryId = jQuery(this).data('id');
             // Find the matching row's view button and trigger it
